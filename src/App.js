@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import MemoryGame from './Board'
 
-function App() {
+export default function App() {
+  const [options, setOptions] = useState(null)
+  const [highScore, setHighScore] = useState(0)
+
+  useEffect(() => {
+    const json = localStorage.getItem('memorygamehighscore')
+    const savedScore = JSON.parse(json)
+    if (savedScore) {
+      setHighScore(savedScore)
+    }
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <div>
+      <div className="container">
+        <h1>Memory Game</h1>
+        <div>High Score: {highScore}</div>
+        <div>
+          {options === null ? (
+            <>
+              <button onClick={() => setOptions(12)}>Easy</button>
+              <button onClick={() => setOptions(18)}>Medium</button>
+              <button onClick={() => setOptions(24)}>Hard</button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  const prevOptions = options
+                  setOptions(null)
+                  setTimeout(() => {
+                    setOptions(prevOptions)
+                  }, 5)
+                }}
+              >
+                Start Over
+              </button>
+              <button onClick={() => setOptions(null)}>Main Menu</button>
+            </>
+          )}
+        </div>
+      </div>
 
-export default App;
+      {options ? (
+        <MemoryGame
+          options={options}
+          setOptions={setOptions}
+          highScore={highScore}
+          setHighScore={setHighScore}
+        />
+      ) : (
+        <h2>Choose a difficulty to begin!</h2>
+      )}
+    </div>
+  )
+}
